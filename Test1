@@ -1,0 +1,28 @@
+import xml.etree.ElementTree as ET
+import csv
+
+# 解析xml文件
+tree = ET.parse('country_data.xml')
+root = tree.getroot()
+
+# 打开csv文件并写入表头
+with open('country_data.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(['name', 'rank', 'year', 'gdppc', 'neighbor_name', 'neighbor_direction'])
+
+    # 遍历每个country元素
+    for country in root.findall('country'):
+        name = country.get('name')
+        rank = country.find('rank').text
+        year = country.find('year').text
+        gdppc = country.find('gdppc').text
+
+        # 遍历每个neighbor元素
+        neighbor_names = []
+        neighbor_directions = []
+        for neighbor in country.findall('neighbor'):
+            neighbor_names.append(neighbor.get('name'))
+            neighbor_directions.append(neighbor.get('direction'))
+
+        # 写入csv文件
+        writer.writerow([name, rank, year, gdppc, ','.join(neighbor_names), ','.join(neighbor_directions)])
